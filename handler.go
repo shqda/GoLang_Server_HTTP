@@ -38,7 +38,7 @@ func (h *MyHandler) handleGet(w http.ResponseWriter, r *http.Request) error {
 
 func (h *MyHandler) getLastMessages() string {
 	if len(h.messages) == 0 {
-		return ""
+		return ``
 	}
 	return h.messages[len(h.messages)-1]
 }
@@ -48,6 +48,10 @@ func (h *MyHandler) handlePost(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		http.Error(w, "Request body reading error: ", http.StatusBadRequest)
 		return err
+	}
+	body, err = MarshalJSON(body)
+	if err != nil {
+		http.Error(w, "Request body marshaling error: ", http.StatusBadRequest)
 	}
 	fmt.Println("Received data:", string(body))
 	h.messages = append(h.messages, string(body))
