@@ -25,6 +25,11 @@ func (h *MyHandler) handleGet(w http.ResponseWriter, r *http.Request) error {
 	switch r.URL.Path {
 	case "/messages/last":
 		w.Write([]byte(h.getLastMessages()))
+	case "/messages/all":
+		for _, m := range h.messages {
+			w.Write([]byte(m))
+			w.Write([]byte("\n"))
+		}
 	default:
 		http.NotFound(w, r)
 	}
