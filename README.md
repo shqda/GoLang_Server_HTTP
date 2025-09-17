@@ -1,3 +1,4 @@
-Пока что без json и нормальной структуры
-<img width="615" height="136" alt="image" src="https://github.com/user-attachments/assets/bdf9c32f-c83c-46df-9ae7-7a8cb9f33b58" />
-<img width="611" height="45" alt="image" src="https://github.com/user-attachments/assets/e8815426-6cf0-4904-a53e-5fa9412ce068" />
+Теперь работает с json, осталось обработать все ошибки
+<img width="701" height="129" alt="image" src="https://github.com/user-attachments/assets/15786861-6d87-4f3f-a91d-5cb0d5e0e865" />
+<img width="350" height="148" alt="image" src="https://github.com/user-attachments/assets/1d58f699-4a90-41ee-8302-d770f52dec40" />
+
