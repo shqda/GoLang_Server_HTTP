@@ -38,7 +38,7 @@ func (h *MyHandler) handleGet(w http.ResponseWriter, r *http.Request) error {
 
 func (h *MyHandler) getLastMessages() string {
 	if len(h.messages) == 0 {
-		return ""
+		return ``
 	}
 	return h.messages[len(h.messages)-1]
 }

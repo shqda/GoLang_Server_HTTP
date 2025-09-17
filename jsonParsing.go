@@ -8,11 +8,11 @@ type message struct {
 	Msg string `json:"message"`
 }
 
-func MarshalJSON(b []byte) (string, error) {
+func MarshalJSON(b []byte) ([]byte, error) {
 	var m message
 	err := json.Unmarshal(b, &m)
 	if err == nil {
-		return m.Msg, nil
+		return []byte(m.Msg), nil
 	}
-	return "", err
+	return nil, err
 }
