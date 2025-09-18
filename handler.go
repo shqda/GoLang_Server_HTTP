@@ -50,10 +50,12 @@ func (h *MyHandler) handlePost(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	body, err = MarshalJSON(body)
-	if err != nil {
+	if err != nil || len(body) == 0 {
 		http.Error(w, "Request body marshaling error: ", http.StatusBadRequest)
+		return err
+	} else {
+		fmt.Println("Received data:", string(body))
+		h.messages = append(h.messages, string(body))
+		return nil
 	}
-	fmt.Println("Received data:", string(body))
-	h.messages = append(h.messages, string(body))
-	return nil
 }
