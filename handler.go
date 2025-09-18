@@ -67,13 +67,13 @@ func (h *MyHandler) handlePost(w http.ResponseWriter, r *http.Request) error {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println("Error: ", err)
-		http.Error(w, "Request body reading error: ", http.StatusBadRequest)
+		http.Error(w, "Request body reading error", http.StatusBadRequest)
 		return err
 	}
 	body, err = MarshalJSON(body)
 	if err != nil || len(body) == 0 {
 		log.Println("Invalid json")
-		http.Error(w, "Request body marshaling error: ", http.StatusBadRequest)
+		http.Error(w, "Request body marshaling error", http.StatusBadRequest)
 		return err
 	} else {
 		fmt.Println("Received data:", string(body))
