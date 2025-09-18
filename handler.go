@@ -24,11 +24,11 @@ func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *MyHandler) handleGet(w http.ResponseWriter, r *http.Request) error {
 	switch r.URL.Path {
 	case "/messages/last":
-		w.Write([]byte(h.getLastMessages()))
+		fmt.Fprintf(w, h.getLastMessages())
 	case "/messages/all":
+		fmt.Fprintf(w, "Messages count: %d\n", len(h.messages))
 		for _, m := range h.messages {
-			w.Write([]byte(m))
-			w.Write([]byte("\n"))
+			fmt.Fprintln(w, m)
 		}
 	default:
 		http.NotFound(w, r)
