@@ -1,0 +1,31 @@
+name: The main GitHub Actions for testing pr
+
+on:
+  pull_request_target:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - './services/*/src/**'
+      - './services/*/CI/.github'
+      - '.'
+
+jobs:
+  check-code:
+    name: Сборка приложения
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Копирование кода в раннер
+        uses: actions/checkout@v4
+      - name: Установка Go на раннер, подготовка среды
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+      - name: Попытка собрать приложение
+        run: go build -v ./...
+      - name: Запуск Unit-тестов в проекте
+        run: go test -v ./...
