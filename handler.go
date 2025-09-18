@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -13,9 +14,17 @@ type MyHandler struct {
 func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		h.handleGet(w, r)
+		err := h.handleGet(w, r)
+		if err != nil {
+			log.Println("handleGet() error: ", err)
+			return
+		}
 	case http.MethodPost:
-		h.handlePost(w, r)
+		err := h.handlePost(w, r)
+		if err != nil {
+			log.Println("handlePost() error: ", err)
+			return
+		}
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 	}
@@ -24,11 +33,22 @@ func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *MyHandler) handleGet(w http.ResponseWriter, r *http.Request) error {
 	switch r.URL.Path {
 	case "/messages/last":
-		fmt.Fprintf(w, h.getLastMessages())
+		_, err := fmt.Fprintf(w, h.getLastMessages())
+		if err != nil {
+			log.Println("Error: ", err)
+			return err
+		}
 	case "/messages/all":
-		fmt.Fprintf(w, "Messages count: %d\n", len(h.messages))
+		_, err := fmt.Fprintf(w, "Messages count: %d\n", len(h.messages))
+		if err != nil {
+			return err
+		}
 		for _, m := range h.messages {
-			fmt.Fprintln(w, m)
+			_, err := fmt.Fprintln(w, m)
+			if err != nil {
+				log.Println("Error: ", err)
+				return err
+			}
 		}
 	default:
 		http.NotFound(w, r)
@@ -46,11 +66,13 @@ func (h *MyHandler) getLastMessages() string {
 func (h *MyHandler) handlePost(w http.ResponseWriter, r *http.Request) error {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
+		log.Println("Error: ", err)
 		http.Error(w, "Request body reading error: ", http.StatusBadRequest)
 		return err
 	}
 	body, err = MarshalJSON(body)
 	if err != nil || len(body) == 0 {
+		log.Println("Invalid json")
 		http.Error(w, "Request body marshaling error: ", http.StatusBadRequest)
 		return err
 	} else {
