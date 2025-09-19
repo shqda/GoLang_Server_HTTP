@@ -1,0 +1,54 @@
+name: The main GitHub Actions for testing pr
+
+on:
+  pull_request_target:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - './services/*/src/**'
+      - './services/*/CI/.github'
+      - '.'
+
+jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Подготовка среды
+        uses: ./.github/actions/setup.yml
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.1
+
+  try-build:
+    needs:
+      - golangci
+    name: Сборка приложения
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Подготовка среды
+        uses: ./.github/actions/setup.yml
+      - name: Попытка собрать приложение
+        run: go build -v ./... -o /dev/null
+
+  unit-tests:
+    needs:
+    - try-build
+    name: Запуск unit-тестов
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Подготовка среды
+        uses: ./.github/actions/setup.yml
+      - name: Запуск Unit-тестов
+        run: go test ./...
+      - name: Проверка на состояние гонки
+        run: go test --race ./...
