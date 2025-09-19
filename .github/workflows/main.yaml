@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Подготовка среды
-        uses: ./.github/actions/setup.yml
+        uses: ./.github/actions/setup
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
@@ -29,7 +29,7 @@ jobs:
         working-directory: .
     steps:
       - name: Подготовка среды
-        uses: ./.github/actions/setup.yml
+        uses: ./.github/actions/setup
       - name: Попытка собрать приложение
         run: go build -v ./... -o /dev/null
 
@@ -43,7 +43,7 @@ jobs:
         working-directory: .
     steps:
       - name: Подготовка среды
-        uses: ./.github/actions/setup.yml
+        uses: ./.github/actions/setup
       - name: Запуск Unit-тестов
         run: go test ./...
       - name: Проверка на состояние гонки
