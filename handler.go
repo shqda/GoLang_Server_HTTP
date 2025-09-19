@@ -1,0 +1,61 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+type MyHandler struct {
+	messages []string
+}
+
+func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		h.handleGet(w, r)
+	case http.MethodPost:
+		h.handlePost(w, r)
+	default:
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
+func (h *MyHandler) handleGet(w http.ResponseWriter, r *http.Request) error {
+	switch r.URL.Path {
+	case "/messages/last":
+		fmt.Fprintf(w, h.getLastMessages())
+	case "/messages/all":
+		fmt.Fprintf(w, "Messages count: %d\n", len(h.messages))
+		for _, m := range h.messages {
+			fmt.Fprintln(w, m)
+		}
+	default:
+		http.NotFound(w, r)
+	}
+	return nil
+}
+
+func (h *MyHandler) getLastMessages() string {
+	if len(h.messages) == 0 {
+		return ``
+	}
+	return h.messages[len(h.messages)-1]
+}
+
+func (h *MyHandler) handlePost(w http.ResponseWriter, r *http.Request) error {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Request body reading error: ", http.StatusBadRequest)
+		return err
+	}
+	body, err = MarshalJSON(body)
+	if err != nil || len(body) == 0 {
+		http.Error(w, "Request body marshaling error: ", http.StatusBadRequest)
+		return err
+	} else {
+		fmt.Println("Received data:", string(body))
+		h.messages = append(h.messages, string(body))
+		return nil
+	}
+}
