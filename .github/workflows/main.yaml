@@ -11,6 +11,9 @@ jobs:
   golangci:
     runs-on: ubuntu-latest
     name: Проверка кода линтером
+    permissions:
+      discussions: write
+      contents: read
     steps:
       - &checkout
         name: Копирование кода в раннер
