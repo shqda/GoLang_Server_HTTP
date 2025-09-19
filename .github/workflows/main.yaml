@@ -31,7 +31,7 @@ jobs:
           golangci_lint_version: v2.1.0
           golangci_lint_flags: --timeout=5m
           reporter: github-pr-review
-          filter_mode: diff_context
+          filter_mode: nofilter
           level: warning
           fail_level: warning
       - name: Дожим репозитория (на дивы попадают не все проверки)
