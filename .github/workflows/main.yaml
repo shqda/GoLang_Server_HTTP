@@ -39,7 +39,7 @@ jobs:
 
   unit-tests:
     needs:
-    - try-build
+      - try-build
     name: Запуск unit-тестов
     runs-on: ubuntu-latest
     defaults:
