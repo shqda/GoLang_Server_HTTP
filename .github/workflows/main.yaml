@@ -1,0 +1,71 @@
+name: The main GitHub Actions for testing pr
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+
+jobs:
+  golangci:
+    runs-on: ubuntu-latest
+    name: Проверка кода линтером
+    steps:
+      - &checkout
+        name: Копирование кода в раннер
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Подготовка среды
+        uses: ./.github/actions/setup
+      - name: Проверка линтером
+        uses: reviewdog/action-golangci-lint@3dfdce20f5ca12d264c214abb993dbb40834da90
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          golangci_lint_version: v2.1.0
+          golangci_lint_flags: --timeout=5m --out-format=line-number
+          reporter: github-pr-review
+          filter_mode: diff-context
+          level: warning
+          fail_level: warning
+          go_version_file: ./go.mod
+          cache: true
+      - name: Дожим репозитория (на дивы попадают не все проверки)
+        uses: golangci/golangci-lint-action@v8
+        with:
+          install-mode: "goinstall"
+
+
+
+  try-build:
+    needs:
+      - golangci
+    name: Сборка приложения
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - *checkout
+      - name: Подготовка среды
+        uses: ./.github/actions/setup
+      - name: Попытка собрать приложение
+        run: go build -v ./... -o /dev/null
+
+  unit-tests:
+    needs:
+      - try-build
+    name: Запуск unit-тестов
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - *checkout
+      - name: Подготовка среды
+        uses: ./.github/actions/setup
+      - name: Запуск Unit-тестов
+        run: go test ./...
+      - name: Проверка на состояние гонки
+        run: go test --race ./...

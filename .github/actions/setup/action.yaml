@@ -1,0 +1,15 @@
+name: Настройка среды
+author: kozlov-e
+description: Подготовка среды для Go проектов
+runs:
+  using: "composite"
+  steps:
+  - name: Копирование кода в раннер
+    uses: actions/checkout@v4
+  - name: Установка Go на раннер, подготовка среды
+    uses: actions/setup-go@v4
+    with:
+      go-version: '1.24'
+  - name: Установка зависимостей
+    run: go mod download
+    shell: bash
