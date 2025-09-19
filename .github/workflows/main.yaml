@@ -1,7 +1,7 @@
 name: The main GitHub Actions for testing pr
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
       - master
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Подготовка среды
-        uses: ./.github/actions/setup
+        uses: .github/actions/setup
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
@@ -28,8 +28,11 @@ jobs:
       run:
         working-directory: .
     steps:
+      - &checkout
+        name: Копирование кода в раннер
+        uses: actions/checkout@v4
       - name: Подготовка среды
-        uses: ./.github/actions/setup
+        uses: .github/actions/setup
       - name: Попытка собрать приложение
         run: go build -v ./... -o /dev/null
 
@@ -42,8 +45,9 @@ jobs:
       run:
         working-directory: .
     steps:
+      - *checkout
       - name: Подготовка среды
-        uses: ./.github/actions/setup
+        uses: .github/actions/setup
       - name: Запуск Unit-тестов
         run: go test ./...
       - name: Проверка на состояние гонки
