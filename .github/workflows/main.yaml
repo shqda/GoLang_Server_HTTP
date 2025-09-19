@@ -34,10 +34,14 @@ jobs:
           filter_mode: nofilter
           level: warning
           fail_level: warning
+        env:
+          REVIEWDOG_DEBUG: "true"
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Дожим репозитория (на дивы попадают не все проверки)
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.60.1
+
 
 
   try-build:
