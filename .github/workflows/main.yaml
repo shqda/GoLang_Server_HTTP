@@ -26,7 +26,7 @@ jobs:
           golangci_lint_version: v2.1.0
           golangci_lint_flags: --timeout=5m
           reporter: github-pr-review
-          filter_mode: diff-context
+          filter_mode: diff_context
           level: warning
           fail_level: warning
           go_version_file: ./go.mod
