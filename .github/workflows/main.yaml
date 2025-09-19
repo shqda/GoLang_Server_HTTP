@@ -7,15 +7,15 @@ on:
       - master
       - develop
 
-permissions:
-  contents: read
-  pull-requests: write
-
-
 jobs:
   golangci:
     runs-on: ubuntu-latest
     name: Проверка кода линтером
+    permissions:
+      contents: read
+      pull-requests: write
+      discussions: write
+      checks: write
     steps:
       - &checkout
         name: Копирование кода в раннер
@@ -25,22 +25,24 @@ jobs:
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Проверка линтером
-        uses: reviewdog/action-golangci-lint@v2
+        uses: reviewdog/action-golangci-lint@3dfdce20f5ca12d264c214abb993dbb40834da90
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           golangci_lint_version: v2.1.0
-          golangci_lint_flags: --timeout=5m
-          reporter: github-pr-review
+          golangci_lint_flags: --timeout=5m --out-format=line-number
+          reporter: github-check
           filter_mode: nofilter
           level: warning
           fail_level: warning
+          go_version_file: ./go.mod
+          cache: true
         env:
           REVIEWDOG_DEBUG: "true"
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Дожим репозитория (на дивы попадают не все проверки)
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: v1.60.1
+          install-mode: "goinstall"
 
 
 
