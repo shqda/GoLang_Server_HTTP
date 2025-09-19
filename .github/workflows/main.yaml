@@ -1,7 +1,7 @@
 name: The main GitHub Actions for testing pr
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
       - master
@@ -12,6 +12,9 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
+      - &checkout
+        name: Копирование кода в раннер
+        uses: actions/checkout@v4
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: golangci-lint
@@ -28,6 +31,7 @@ jobs:
       run:
         working-directory: .
     steps:
+      - *checkout
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Попытка собрать приложение
@@ -35,13 +39,14 @@ jobs:
 
   unit-tests:
     needs:
-    - try-build
+      - try-build
     name: Запуск unit-тестов
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: .
     steps:
+      - *checkout
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Запуск Unit-тестов
