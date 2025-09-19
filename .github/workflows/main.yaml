@@ -24,7 +24,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           golangci_lint_version: v2.1.0
-          golangci_lint_flags: --timeout=5m --out-format=line-number
+          golangci_lint_flags: --timeout=5m
           reporter: github-pr-review
           filter_mode: diff-context
           level: warning
