@@ -25,7 +25,13 @@ jobs:
           golangci_lint_flags: --timeout=5m
           reporter: github-pr-review
           filter_mode: diff_context
-          level: error
+          level: warning
+          fail_level: true
+      - name: Дожим репозитория (на дивы попадают не все проверки)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.60.1
+
 
   try-build:
     needs:
