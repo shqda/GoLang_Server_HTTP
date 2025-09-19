@@ -12,6 +12,9 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
+      - &checkout
+        name: Копирование кода в раннер
+        uses: actions/checkout@v4
       - name: Подготовка среды
         uses: .github/actions/setup
       - name: golangci-lint
@@ -28,9 +31,7 @@ jobs:
       run:
         working-directory: .
     steps:
-      - &checkout
-        name: Копирование кода в раннер
-        uses: actions/checkout@v4
+      - *checkout
       - name: Подготовка среды
         uses: .github/actions/setup
       - name: Попытка собрать приложение
