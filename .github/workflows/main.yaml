@@ -6,10 +6,6 @@ on:
       - main
       - master
       - develop
-    paths:
-      - './services/*/src/**'
-      - './services/*/CI/.github'
-      - '.'
 
 jobs:
   golangci:
