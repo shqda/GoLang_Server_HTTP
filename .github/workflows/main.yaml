@@ -7,6 +7,11 @@ on:
       - master
       - develop
 
+permissions:
+  contents: read
+  pull-requests: write
+
+
 jobs:
   golangci:
     runs-on: ubuntu-latest
@@ -21,12 +26,12 @@ jobs:
         uses: reviewdog/action-golangci-lint@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          golangci_lint_version: v2.1.0
+          golangci_lint_version: v1.60.1
           golangci_lint_flags: --timeout=5m
           reporter: github-pr-review
           filter_mode: diff_context
           level: warning
-          fail_level: true
+          fail_level: warning
       - name: Дожим репозитория (на дивы попадают не все проверки)
         uses: golangci/golangci-lint-action@v6
         with:
