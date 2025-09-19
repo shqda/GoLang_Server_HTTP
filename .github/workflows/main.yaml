@@ -20,6 +20,8 @@ jobs:
       - &checkout
         name: Копирование кода в раннер
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Проверка линтером
