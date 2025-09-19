@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Проверка кода линтером
     permissions:
+      checks: write
       discussions: write
       contents: read
     steps:
