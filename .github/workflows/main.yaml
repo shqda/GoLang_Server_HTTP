@@ -20,7 +20,7 @@ jobs:
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Проверка линтером
-        uses: reviewdog/action-golangci-lint@3dfdce20f5ca12d264c214abb993dbb40834da90
+        uses: reviewdog/action-golangci-lint@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           golangci_lint_version: v2.1.0
