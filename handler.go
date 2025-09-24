@@ -33,7 +33,7 @@ func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *MyHandler) handleGet(w http.ResponseWriter, r *http.Request) error {
 	switch r.URL.Path {
 	case "/messages/last":
-		_, err := fmt.Fprintf(w, h.getLastMessages())
+		_, err := fmt.Fprint(w, h.getLastMessages())
 		if err != nil {
 			log.Println("Error: ", err)
 			return err
