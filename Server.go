@@ -6,10 +6,10 @@ type MyServer struct {
 	*http.Server
 }
 
-func (s *MyServer) StarServer() {
+func (s *MyServer) StartServer() {
 	srv := &http.Server{
 		Addr:    ":5252",
-		Handler: &MyHandler{},
+		Handler: NewMyHandler(),
 	}
 	err := http.ListenAndServe(srv.Addr, srv.Handler)
 	if err != nil {

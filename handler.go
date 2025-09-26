@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -8,52 +9,63 @@ import (
 )
 
 type MyHandler struct {
+	mux      *http.ServeMux
 	messages []string
 }
 
+func NewMyHandler() *MyHandler {
+	h := &MyHandler{mux: http.NewServeMux()}
+	h.handlerRoutes()
+	return h
+}
+
 func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		err := h.handleGet(w, r)
-		if err != nil {
-			log.Println("handleGet() error: ", err)
-			return
-		}
-	case http.MethodPost:
-		err := h.handlePost(w, r)
-		if err != nil {
-			log.Println("handlePost() error: ", err)
-			return
-		}
-	default:
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	h.mux.ServeHTTP(w, r)
+}
+
+func (h *MyHandler) handlerRoutes() {
+	h.mux.HandleFunc("GET /messages/last", h.getLastMessageHandler)
+	h.mux.HandleFunc("GET /messages/all", h.getAllMessagesHandler)
+	h.mux.HandleFunc("POST /", h.createMessageHandler)
+}
+
+func (h *MyHandler) getLastMessageHandler(w http.ResponseWriter, r *http.Request) {
+	_, err := fmt.Fprint(w, h.getLastMessages())
+	if err != nil {
+		log.Println("Error: ", err)
 	}
 }
 
-func (h *MyHandler) handleGet(w http.ResponseWriter, r *http.Request) error {
-	switch r.URL.Path {
-	case "/messages/last":
-		_, err := fmt.Fprint(w, h.getLastMessages())
+func (h *MyHandler) getAllMessagesHandler(w http.ResponseWriter, r *http.Request) {
+	_, err := fmt.Fprintf(w, "Messages count: %d\n", len(h.messages))
+	if err != nil {
+	}
+	for _, m := range h.messages {
+		_, err := fmt.Fprintln(w, m)
 		if err != nil {
 			log.Println("Error: ", err)
-			return err
 		}
-	case "/messages/all":
-		_, err := fmt.Fprintf(w, "Messages count: %d\n", len(h.messages))
-		if err != nil {
-			return err
-		}
-		for _, m := range h.messages {
-			_, err := fmt.Fprintln(w, m)
-			if err != nil {
-				log.Println("Error: ", err)
-				return err
-			}
-		}
-	default:
-		http.NotFound(w, r)
 	}
-	return nil
+}
+
+func (h *MyHandler) createMessageHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println("Error: ", err)
+		http.Error(w, "Request body reading error", http.StatusBadRequest)
+	}
+	type message struct {
+		Msg string `json:"message"`
+	}
+	var m message
+	err = json.Unmarshal(body, &m)
+	if err != nil || len(body) == 0 {
+		log.Println("Invalid json")
+		http.Error(w, "Request body marshaling error", http.StatusBadRequest)
+	} else {
+		fmt.Println("Received data:", m.Msg)
+		h.messages = append(h.messages, m.Msg)
+	}
 }
 
 func (h *MyHandler) getLastMessages() string {
@@ -61,23 +73,4 @@ func (h *MyHandler) getLastMessages() string {
 		return ``
 	}
 	return h.messages[len(h.messages)-1]
-}
-
-func (h *MyHandler) handlePost(w http.ResponseWriter, r *http.Request) error {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		log.Println("Error: ", err)
-		http.Error(w, "Request body reading error", http.StatusBadRequest)
-		return err
-	}
-	body, err = MarshalJSON(body)
-	if err != nil || len(body) == 0 {
-		log.Println("Invalid json")
-		http.Error(w, "Request body marshaling error", http.StatusBadRequest)
-		return err
-	} else {
-		fmt.Println("Received data:", string(body))
-		h.messages = append(h.messages, string(body))
-		return nil
-	}
 }
