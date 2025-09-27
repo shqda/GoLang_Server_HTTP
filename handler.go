@@ -39,6 +39,7 @@ func (h *MyHandler) getLastMessageHandler(w http.ResponseWriter, r *http.Request
 func (h *MyHandler) getAllMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprintf(w, "Messages count: %d\n", len(h.messages))
 	if err != nil {
+		log.Println("Error: ", err)
 	}
 	for _, m := range h.messages {
 		_, err := fmt.Fprintln(w, m)
