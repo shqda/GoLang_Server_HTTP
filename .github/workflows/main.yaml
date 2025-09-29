@@ -58,9 +58,9 @@ jobs:
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Попытка собрать приложение
-        run: go build -v ./... -o deleteme
+        run: go build -o deleteme .
       - name: Удаление артефакта
-        run: ./deleteme
+        run: rm deleteme
 
   unit-tests:
     needs:
