@@ -1,7 +1,7 @@
 package server
 
 import (
-	"HttpServer/src/packages/server/handlers"
+	"HttpServer/src/server/handlers"
 	"net/http"
 )
 
