@@ -7,6 +7,9 @@ on:
       - master
       - develop
 
+env:
+  working-directory: 'services/simple-http-server/src'
+
 jobs:
   golangci:
     runs-on: ubuntu-latest
@@ -36,6 +39,7 @@ jobs:
           fail_level: warning
           go_version_file: ./go.mod
           cache: true
+          workdir: ${{env.working-directory}}
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Дожим репозитория (на дивы попадают не все проверки)
@@ -50,17 +54,16 @@ jobs:
       - golangci
     name: Сборка приложения
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
     steps:
       - *checkout
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Попытка собрать приложение
         run: go build -o deleteme .
+        working-directory: ${{env.working-directory}}
       - name: Удаление артефакта
         run: rm deleteme
+        working-directory: ${{env.working-directory}}
 
   unit-tests:
     needs:
@@ -69,12 +72,13 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .
+        working-directory: ./src
     steps:
       - *checkout
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Запуск Unit-тестов
         run: go test ./...
-      - name: Проверка на состояние гонки
+      - name: Проверка на состояние гонкb
         run: go test --race ./...
+        working-directory: ${{env.working-directory}}

@@ -11,3 +11,4 @@ runs:
   - name: Установка зависимостей
     run: go mod download
     shell: bash
+    working-directory:  ${{env.working-directory}}
