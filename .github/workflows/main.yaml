@@ -79,6 +79,7 @@ jobs:
         uses: ./.github/actions/setup
       - name: Запуск Unit-тестов
         run: go test ./...
+        working-directory: ${{env.working-directory}}
       - name: Проверка на состояние гонкb
         run: go test --race ./...
         working-directory: ${{env.working-directory}}
