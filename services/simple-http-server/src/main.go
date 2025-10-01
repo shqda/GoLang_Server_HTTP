@@ -1,6 +1,8 @@
 package main
 
-import "HttpServer/src/packages/server"
+import (
+	"HttpServer/server"
+)
 
 func main() {
 	MyServer := server.MyServer{}
