@@ -38,7 +38,7 @@ jobs:
           fail_level: warning
           go_version_file: ./go.mod
           cache: true
-          workdir: {{env.working-directory}}
+          workdir: ${{env.working-directory}}
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Дожим репозитория (на дивы попадают не все проверки)
