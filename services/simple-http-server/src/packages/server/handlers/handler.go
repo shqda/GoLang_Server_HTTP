@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -9,34 +9,17 @@ import (
 )
 
 type MyHandler struct {
-	mux      *http.ServeMux
 	messages []string
 }
 
-func NewMyHandler() *MyHandler {
-	h := &MyHandler{mux: http.NewServeMux()}
-	h.handlerRoutes()
-	return h
-}
-
-func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.mux.ServeHTTP(w, r)
-}
-
-func (h *MyHandler) handlerRoutes() {
-	h.mux.HandleFunc("GET /messages/last", h.getLastMessageHandler)
-	h.mux.HandleFunc("GET /messages/all", h.getAllMessagesHandler)
-	h.mux.HandleFunc("POST /", h.createMessageHandler)
-}
-
-func (h *MyHandler) getLastMessageHandler(w http.ResponseWriter, r *http.Request) {
+func (h *MyHandler) GetLastMessageHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprint(w, h.getLastMessages())
 	if err != nil {
 		log.Println("Error: ", err)
 	}
 }
 
-func (h *MyHandler) getAllMessagesHandler(w http.ResponseWriter, r *http.Request) {
+func (h *MyHandler) GetAllMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprintf(w, "Messages count: %d\n", len(h.messages))
 	if err != nil {
 		log.Println("Error: ", err)
@@ -49,7 +32,7 @@ func (h *MyHandler) getAllMessagesHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func (h *MyHandler) createMessageHandler(w http.ResponseWriter, r *http.Request) {
+func (h *MyHandler) CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println("Error: ", err)
