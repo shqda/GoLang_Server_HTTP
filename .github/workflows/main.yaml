@@ -16,6 +16,8 @@ jobs:
       discussions: write
       pull-requests: write
       contents: read
+    env:
+      working-directory: './src'
     steps:
       - &checkout
         name: Копирование кода в раннер
@@ -36,7 +38,7 @@ jobs:
           fail_level: warning
           go_version_file: ./go.mod
           cache: true
-          workdir: './src'
+          workdir: {{env.working-directory}}
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Дожим репозитория (на дивы попадают не все проверки)
@@ -53,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .
+        working-directory: ./src
     steps:
       - *checkout
       - name: Подготовка среды
@@ -70,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .
+        working-directory: ./src
     steps:
       - *checkout
       - name: Подготовка среды
