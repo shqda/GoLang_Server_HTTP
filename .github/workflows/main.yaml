@@ -7,6 +7,9 @@ on:
       - master
       - develop
 
+env:
+  working-directory: 'services/simple-http-server/src'
+
 jobs:
   golangci:
     runs-on: ubuntu-latest
@@ -16,8 +19,6 @@ jobs:
       discussions: write
       pull-requests: write
       contents: read
-    env:
-      working-directory: './src'
     steps:
       - &checkout
         name: Копирование кода в раннер
@@ -53,17 +54,16 @@ jobs:
       - golangci
     name: Сборка приложения
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./src
     steps:
       - *checkout
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Попытка собрать приложение
         run: go build -o deleteme .
+        working-directory: ${{env.working-directory}}
       - name: Удаление артефакта
         run: rm deleteme
+        working-directory: ${{env.working-directory}}
 
   unit-tests:
     needs:
@@ -79,5 +79,6 @@ jobs:
         uses: ./.github/actions/setup
       - name: Запуск Unit-тестов
         run: go test ./...
-      - name: Проверка на состояние гонки
+      - name: Проверка на состояние гонкb
         run: go test --race ./...
+        working-directory: ${{env.working-directory}}
