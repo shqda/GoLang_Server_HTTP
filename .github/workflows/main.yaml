@@ -37,7 +37,6 @@ jobs:
           filter_mode: diff_context
           level: warning
           fail_level: warning
-          go_version_file: ${{env.working-directory}}/go.mod
           cache: true
           workdir: ${{env.working-directory}}
         env:
