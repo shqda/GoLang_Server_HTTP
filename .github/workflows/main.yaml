@@ -7,10 +7,18 @@ on:
       - master
       - develop
 
+env:
+  working-directory: './services/simple-http-server/src'
+
 jobs:
   golangci:
     runs-on: ubuntu-latest
     name: Проверка кода линтером
+    permissions:
+      checks: write
+      discussions: write
+      pull-requests: write
+      contents: read
     steps:
       - &checkout
         name: Копирование кода в раннер
@@ -24,17 +32,20 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           golangci_lint_version: v2.1.0
-          golangci_lint_flags: --timeout=5m --out-format=line-number
+          golangci_lint_flags: --timeout=5m
           reporter: github-pr-review
-          filter_mode: diff-context
+          filter_mode: diff_context
           level: warning
           fail_level: warning
-          go_version_file: ./go.mod
           cache: true
+          workdir: ${{env.working-directory}}
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Дожим репозитория (на дивы попадают не все проверки)
         uses: golangci/golangci-lint-action@v8
         with:
           install-mode: "goinstall"
+          working-directory: ${{env.working-directory}}
 
 
 
@@ -43,15 +54,16 @@ jobs:
       - golangci
     name: Сборка приложения
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
     steps:
       - *checkout
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Попытка собрать приложение
-        run: go build -v ./... -o /dev/null
+        run: go build -o deleteme .
+        working-directory: ${{env.working-directory}}
+      - name: Удаление артефакта
+        run: rm deleteme
+        working-directory: ${{env.working-directory}}
 
   unit-tests:
     needs:
@@ -60,12 +72,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .
+        working-directory: ./src
     steps:
       - *checkout
       - name: Подготовка среды
         uses: ./.github/actions/setup
       - name: Запуск Unit-тестов
         run: go test ./...
-      - name: Проверка на состояние гонки
+        working-directory: ${{env.working-directory}}
+      - name: Проверка на состояние гонкb
         run: go test --race ./...
+        working-directory: ${{env.working-directory}}
