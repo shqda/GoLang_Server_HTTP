@@ -37,6 +37,7 @@ func (h *MyHandler) CreateMessageHandler(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		log.Println("Error: ", err)
 		http.Error(w, "Request body reading error", http.StatusBadRequest)
+		return
 	}
 	type message struct {
 		Msg string `json:"message"`
@@ -46,9 +47,11 @@ func (h *MyHandler) CreateMessageHandler(w http.ResponseWriter, r *http.Request)
 	if err != nil || len(body) == 0 {
 		log.Println("Invalid json")
 		http.Error(w, "Request body marshaling error", http.StatusBadRequest)
+		return
 	} else {
 		fmt.Println("Received data:", m.Msg)
 		h.messages = append(h.messages, m.Msg)
+		w.WriteHeader(http.StatusCreated)
 	}
 }
 
