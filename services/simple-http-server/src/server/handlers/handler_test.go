@@ -60,13 +60,13 @@ func TestMyHandler_GetAllMessagesHandlerMessageHandler(t *testing.T) {
 		{
 			name:     "One message",
 			messages: []string{"Hello"},
-			result:   "Hello",
+			result:   "Hello\n",
 			status:   http.StatusOK,
 		},
 		{
 			name:     "Multiple messages",
 			messages: []string{"Hello", "World"},
-			result:   "Hello\nWorld",
+			result:   "Hello\nWorld\n",
 			status:   http.StatusOK,
 		},
 		{
