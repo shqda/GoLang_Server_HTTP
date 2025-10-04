@@ -13,17 +13,13 @@ type MyHandler struct {
 }
 
 func (h *MyHandler) GetLastMessageHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprint(w, h.getLastMessages())
+	_, err := fmt.Fprint(w, h.getLastMessage())
 	if err != nil {
 		log.Println("Error: ", err)
 	}
 }
 
 func (h *MyHandler) GetAllMessagesHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprintf(w, "Messages count: %d\n", len(h.messages))
-	if err != nil {
-		log.Println("Error: ", err)
-	}
 	for _, m := range h.messages {
 		_, err := fmt.Fprintln(w, m)
 		if err != nil {
@@ -36,16 +32,17 @@ func (h *MyHandler) CreateMessageHandler(w http.ResponseWriter, r *http.Request)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println("Error: ", err)
+		w.WriteHeader(http.StatusBadRequest)
 		http.Error(w, "Request body reading error", http.StatusBadRequest)
 		return
 	}
-	type message struct {
+	var m struct {
 		Msg string `json:"message"`
 	}
-	var m message
 	err = json.Unmarshal(body, &m)
-	if err != nil || len(body) == 0 {
+	if err != nil || len(body) == 0 || m.Msg == "" {
 		log.Println("Invalid json")
+		w.WriteHeader(http.StatusBadRequest)
 		http.Error(w, "Request body marshaling error", http.StatusBadRequest)
 		return
 	} else {
@@ -55,7 +52,7 @@ func (h *MyHandler) CreateMessageHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (h *MyHandler) getLastMessages() string {
+func (h *MyHandler) getLastMessage() string {
 	if len(h.messages) == 0 {
 		return ``
 	}
