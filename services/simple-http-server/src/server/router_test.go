@@ -44,16 +44,19 @@ func TestGetRouter(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.method == http.MethodGet {
+			switch tc.method {
+			case http.MethodGet:
 				resp, err := http.Get(tc.url)
 				if err != nil || resp.StatusCode != tc.status {
 					t.Errorf("GET (%s) failed, StatusCode: %v", tc.url, resp.StatusCode)
 				}
-			} else if tc.method == http.MethodPost {
+			case http.MethodPost:
 				resp, err := http.Post(tc.url, "application/json", strings.NewReader(`{"message":"Hello"}`))
 				if err != nil || resp.StatusCode != tc.status {
 					t.Errorf("POST (%s) failed, StatusCode: %v", tc.url, resp.StatusCode)
 				}
+			default:
+				t.Errorf("GET (%s) method not allowed", tc.method)
 			}
 		})
 	}
