@@ -14,5 +14,5 @@ type MyServer struct {
 
 func (s *MyServer) StartServer(config *configs.ServerConfig) error {
 	fmt.Printf("Starting server on port %v", config.Server.Port)
-	return http.ListenAndServe(":"+strconv.Itoa(config.Server.Port), GetRouter(&handlers.MyHandler{}))
+	return http.ListenAndServe(config.Server.Host+":"+strconv.Itoa(config.Server.Port), GetRouter(&handlers.MyHandler{}))
 }
