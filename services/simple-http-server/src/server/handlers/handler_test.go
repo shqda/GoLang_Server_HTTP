@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -42,10 +43,8 @@ func TestMyHandler_GetLastMessageHandler(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/messages/last", nil)
 			w := httptest.NewRecorder()
 			mh.GetLastMessageHandler(w, req)
-			if w.Code != tc.status || w.Body.String() != tc.result {
-				t.Errorf("handler returned wrong status code: got %v want %v", w.Code, tc.status)
-				t.Errorf("handler returned unexpected body: got %v want %v", w.Body, tc.result)
-			}
+			assert.Equal(t, tc.status, w.Code)
+			assert.Equal(t, w.Body.String(), tc.result)
 		})
 	}
 }
@@ -84,10 +83,8 @@ func TestMyHandler_GetAllMessagesHandlerMessageHandler(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/messages/all", nil)
 			w := httptest.NewRecorder()
 			mh.GetAllMessagesHandler(w, req)
-			if w.Code != tc.status || w.Body.String() != tc.result {
-				t.Errorf("handler returned wrong status code: got %v want %v", w.Code, tc.status)
-				t.Errorf("handler returned unexpected body: got %v want %v", w.Body, tc.result)
-			}
+			assert.Equal(t, tc.status, w.Code)
+			assert.Equal(t, w.Body.String(), tc.result)
 		})
 	}
 }
@@ -123,9 +120,7 @@ func TestMyHandler_CreateMessageHandler(t *testing.T) {
 			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(body))
 			w := httptest.NewRecorder()
 			mh.CreateMessageHandler(w, req)
-			if w.Code != tc.status {
-				t.Errorf("CreateMessageHandler returned wrong status code: got %v want %v", w.Code, tc.status)
-			}
+			assert.Equal(t, w.Code, tc.status)
 		})
 	}
 }

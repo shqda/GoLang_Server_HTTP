@@ -2,6 +2,8 @@ package server
 
 import (
 	"HttpServer/server/handlers"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -26,7 +28,7 @@ func TestGetRouter(t *testing.T) {
 		{
 			name:   "POST message",
 			method: http.MethodPost,
-			url:    srv.URL + "/", //ченкуть работает ли на любой
+			url:    srv.URL + "/",
 			status: http.StatusCreated,
 		},
 		{
@@ -47,14 +49,12 @@ func TestGetRouter(t *testing.T) {
 			switch tc.method {
 			case http.MethodGet:
 				resp, err := http.Get(tc.url)
-				if err != nil || resp.StatusCode != tc.status {
-					t.Errorf("GET (%s) failed, StatusCode: %v", tc.url, resp.StatusCode)
-				}
+				require.NoError(t, err)
+				assert.Equal(t, tc.status, resp.StatusCode)
 			case http.MethodPost:
 				resp, err := http.Post(tc.url, "application/json", strings.NewReader(`{"message":"Hello"}`))
-				if err != nil || resp.StatusCode != tc.status {
-					t.Errorf("POST (%s) failed, StatusCode: %v", tc.url, resp.StatusCode)
-				}
+				require.NoError(t, err)
+				assert.Equal(t, tc.status, resp.StatusCode)
 			default:
 				t.Errorf("GET (%s) method not allowed", tc.method)
 			}
