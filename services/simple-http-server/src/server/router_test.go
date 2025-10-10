@@ -4,6 +4,7 @@ import (
 	"HttpServer/server/handlers"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -18,6 +19,7 @@ func TestGetRouter(t *testing.T) {
 		method string
 		url    string
 		status int
+		body   string
 	}{
 		{
 			name:   "GET last message",
@@ -29,7 +31,8 @@ func TestGetRouter(t *testing.T) {
 			name:   "POST message",
 			method: http.MethodPost,
 			url:    srv.URL + "/",
-			status: http.StatusCreated,
+			status: http.StatusBadRequest,
+			body:   "asdasd",
 		},
 		{
 			name:   "GET all messages",
@@ -44,20 +47,29 @@ func TestGetRouter(t *testing.T) {
 			status: http.StatusMethodNotAllowed,
 		},
 	}
+	client := http.Client{}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			switch tc.method {
-			case http.MethodGet:
-				resp, err := http.Get(tc.url)
-				require.NoError(t, err)
-				assert.Equal(t, tc.status, resp.StatusCode)
-			case http.MethodPost:
-				resp, err := http.Post(tc.url, "application/json", strings.NewReader(`{"message":"Hello"}`))
-				require.NoError(t, err)
-				assert.Equal(t, tc.status, resp.StatusCode)
-			default:
-				t.Errorf("GET (%s) method not allowed", tc.method)
+			var reqBody io.Reader
+			if tc.body != "" {
+				reqBody = strings.NewReader(tc.body)
+			} else {
+				reqBody = nil
 			}
+			req, err := http.NewRequest(tc.method, tc.url, reqBody)
+			require.NoError(t, err)
+			if tc.body != "" {
+				req.Header.Set("Content-Type", "application/json")
+			}
+			resp, err := client.Do(req)
+			require.NoError(t, err)
+			defer func(Body io.ReadCloser) {
+				err := Body.Close()
+				if err != nil {
+					require.NoError(t, err)
+				}
+			}(resp.Body)
+			assert.Equal(t, tc.status, resp.StatusCode)
 		})
 	}
 }
