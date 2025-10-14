@@ -53,23 +53,14 @@ func TestGetRouter(t *testing.T) {
 			var reqBody io.Reader
 			if tc.body != "" {
 				reqBody = strings.NewReader(tc.body)
-			} else {
-				reqBody = nil
 			}
 			req, err := http.NewRequest(tc.method, tc.url, reqBody)
 			require.NoError(t, err)
-			if tc.body != "" {
-				req.Header.Set("Content-Type", "application/json")
-			}
+			req.Header.Set("Content-Type", "application/json")
 			resp, err := client.Do(req)
 			require.NoError(t, err)
-			defer func(Body io.ReadCloser) {
-				err := Body.Close()
-				if err != nil {
-					require.NoError(t, err)
-				}
-			}(resp.Body)
 			assert.Equal(t, tc.status, resp.StatusCode)
+			require.NoError(t, resp.Body.Close())
 		})
 	}
 }

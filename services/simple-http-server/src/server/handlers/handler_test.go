@@ -74,6 +74,12 @@ func TestMyHandler_GetAllMessagesHandlerMessageHandler(t *testing.T) {
 			result:   ``,
 			status:   http.StatusOK,
 		},
+		{
+			name:     "Nil message",
+			messages: nil,
+			result:   ``,
+			status:   http.StatusOK,
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -108,6 +114,11 @@ func TestMyHandler_CreateMessageHandler(t *testing.T) {
 		{
 			name:   "Empty JSON",
 			value:  map[string]string{},
+			status: http.StatusBadRequest,
+		},
+		{
+			name:   "Nil map",
+			value:  nil,
 			status: http.StatusBadRequest,
 		},
 	}

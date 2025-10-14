@@ -4,7 +4,6 @@ import (
 	"HttpServer/config"
 	"HttpServer/server/handlers"
 	"net/http"
-	"strconv"
 )
 
 type MyServer struct {
@@ -12,5 +11,5 @@ type MyServer struct {
 }
 
 func (s *MyServer) StartServer(cfg *config.ServerConfig) error {
-	return http.ListenAndServe(":"+strconv.Itoa(cfg.Server.Port), GetRouter(&handlers.MyHandler{}))
+	return http.ListenAndServe(cfg.Server.Host+":"+cfg.GetServerPortAsString(), GetRouter(&handlers.MyHandler{}))
 }
