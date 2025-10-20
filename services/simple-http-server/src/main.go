@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	cfg, err := config.LoadServerConfig("config/server_config.yaml")
+	cfg, err := config.LoadServerConfig()
 	if err != nil {
 		log.Fatalf("Config loading error: %v", err)
 	}

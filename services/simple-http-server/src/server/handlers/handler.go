@@ -27,7 +27,8 @@ func (h *MyHandler) GetAllMessagesHandler(w http.ResponseWriter, r *http.Request
 	for _, m := range h.messages {
 		_, err := fmt.Fprintln(w, m)
 		if err != nil {
-			log.Println("error: ", err)
+			http.Error(w, "error: ", http.StatusInternalServerError)
+			return
 		}
 	}
 }
