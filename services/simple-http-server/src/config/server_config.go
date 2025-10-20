@@ -28,7 +28,7 @@ func LoadServerConfig() (*ServerConfig, error) {
 	return &c, nil
 }
 
-func (cfg *ServerConfig) GetServerPortAsString() string {
+func (cfg *ServerConfig) GetServerPort() string {
 	if cfg.Server.Port == "" {
 		return serverPort
 	}
