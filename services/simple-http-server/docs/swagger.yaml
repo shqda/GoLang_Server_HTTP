@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  title: My API
+  version: 1.0.0
+  description: API for server
+servers:
+  - url: http://localhost:5252
+paths:
+  /messages/last:
+    get:
+      tags:
+        - Messages
+      summary: Returns last message
+      description: Returns last message, if no messages, returns an empty string
+      responses:
+        '200':
+          description: Last message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        default:
+          description: Unexpected error
+  /messages/all:
+    get:
+      tags:
+        - Messages
+      summary: Returns all messages
+      description: Returns all messages, if no messages, returns an empty string
+      responses:
+        '200':
+          description: Last message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        default:
+          description: Unexpected error
+  /messages/add:
+    post:
+      tags:
+        - Messages
+      summary: Adds new message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          description: Successfully added message
+        '400':
+          description: Message was not added
+        default:
+          description: Unexpected error
+components:
+  schemas:
+    Message:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: Message text
+          type: string
+          example: "Hello world!"
