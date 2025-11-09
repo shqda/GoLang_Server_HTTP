@@ -2,13 +2,15 @@ package server
 
 import (
 	"HttpServer/server/handlers"
-	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
-func GetRouter(h *handlers.MyHandler) *http.ServeMux {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /messages/last", h.GetLastMessageHandler)
-	mux.HandleFunc("GET /messages/all", h.GetAllMessagesHandler)
-	mux.HandleFunc("POST /", h.CreateMessageHandler)
-	return mux
+func GetRouter(h *handlers.MyHandler) *gin.Engine {
+	r := gin.Default()
+
+	r.GET("/messages/last", h.GetLastMessageHandler)
+	r.GET("/messages/all", h.GetAllMessagesHandler)
+	r.POST("/messages/add", h.CreateMessageHandler)
+
+	return r
 }
