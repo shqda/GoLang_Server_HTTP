@@ -1,9 +1,8 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 )
@@ -16,45 +15,34 @@ type message struct {
 	Msg string `json:"message"`
 }
 
-func (h *MyHandler) GetLastMessageHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprint(w, h.getLastMessage())
-	if err != nil {
-		log.Println("error: ", err)
-	}
-}
-
-func (h *MyHandler) GetAllMessagesHandler(w http.ResponseWriter, r *http.Request) {
-	for _, m := range h.messages {
-		_, err := fmt.Fprintln(w, m)
-		if err != nil {
-			http.Error(w, "error: ", http.StatusInternalServerError)
-			return
-		}
-	}
-}
-
-func (h *MyHandler) CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		log.Println("error: ", err)
-		http.Error(w, "Request body reading error", http.StatusBadRequest)
+func (h *MyHandler) GetLastMessageHandler(c *gin.Context) {
+	last := h.getLastMessage()
+	if last == "" {
+		c.String(http.StatusOK, "")
 		return
 	}
-	m := message{}
-	err = json.Unmarshal(body, &m)
-	if err != nil || len(body) == 0 || m.Msg == "" {
-		log.Println("Invalid json")
-		http.Error(w, "Request body marshaling error", http.StatusBadRequest)
+	c.String(http.StatusOK, last)
+}
+
+func (h *MyHandler) GetAllMessagesHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, h.messages)
+}
+
+func (h *MyHandler) CreateMessageHandler(c *gin.Context) {
+	var m message
+	if err := c.BindJSON(&m); err != nil || m.Msg == "" {
+		log.Println("Invalid JSON:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 		return
 	}
 	fmt.Println("Received data:", m.Msg)
 	h.messages = append(h.messages, m.Msg)
-	w.WriteHeader(http.StatusCreated)
+	c.Status(http.StatusCreated)
 }
 
 func (h *MyHandler) getLastMessage() string {
 	if len(h.messages) == 0 {
-		return ``
+		return ""
 	}
 	return h.messages[len(h.messages)-1]
 }
