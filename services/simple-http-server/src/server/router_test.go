@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -72,7 +72,7 @@ func TestGetRouter(t *testing.T) {
 			assert.Equal(t, tt.statusCode, w.Code)
 
 			if tt.respBody != nil {
-				respData, _ := ioutil.ReadAll(w.Body)
+				respData, _ := io.ReadAll(w.Body)
 				switch v := tt.respBody.(type) {
 				case string:
 					assert.Equal(t, v, string(respData))
