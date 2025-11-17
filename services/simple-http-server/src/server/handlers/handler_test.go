@@ -20,10 +20,26 @@ func TestMyHandler_GetLastMessageHandler(t *testing.T) {
 		result   string
 		status   int
 	}{
-		{"One message", []string{"Hello"}, "Hello", http.StatusOK},
-		{"Multiple messages", []string{"Hello", "World"}, "World", http.StatusOK},
-		{"Empty message", []string{}, "", http.StatusOK},
-		{"Nil message", nil, "", http.StatusOK},
+		{
+			"One message",
+			[]string{"Hello"},
+			"Hello",
+			http.StatusOK},
+		{
+			"Multiple messages",
+			[]string{"Hello", "World"},
+			"World",
+			http.StatusOK},
+		{
+			"Empty message",
+			[]string{},
+			"",
+			http.StatusOK},
+		{
+			"Nil message",
+			nil,
+			"",
+			http.StatusOK},
 	}
 
 	for _, tc := range tests {
@@ -51,10 +67,26 @@ func TestMyHandler_GetAllMessagesHandler(t *testing.T) {
 		result   []string
 		status   int
 	}{
-		{"One message", []string{"Hello"}, []string{"Hello"}, http.StatusOK},
-		{"Multiple messages", []string{"Hello", "World"}, []string{"Hello", "World"}, http.StatusOK},
-		{"Empty message", []string{}, []string{}, http.StatusOK},
-		{"Nil message", nil, []string{}, http.StatusOK},
+		{
+			"One message",
+			[]string{"Hello"},
+			[]string{"Hello"},
+			http.StatusOK},
+		{
+			"Multiple messages",
+			[]string{"Hello", "World"},
+			[]string{"Hello", "World"},
+			http.StatusOK},
+		{
+			"Empty message",
+			[]string{},
+			[]string{},
+			http.StatusOK},
+		{
+			"Nil message",
+			nil,
+			[]string(nil),
+			http.StatusOK},
 	}
 
 	for _, tc := range tests {
@@ -85,10 +117,22 @@ func TestMyHandler_CreateMessageHandler(t *testing.T) {
 		value  map[string]string
 		status int
 	}{
-		{"Valid JSON", map[string]string{"message": "Hello World"}, http.StatusCreated},
-		{"Invalid JSON", map[string]string{"msg": "aboba"}, http.StatusBadRequest},
-		{"Empty JSON", map[string]string{}, http.StatusBadRequest},
-		{"Nil map", nil, http.StatusBadRequest},
+		{
+			"Valid JSON",
+			map[string]string{"message": "Hello World"},
+			http.StatusOK},
+		{
+			"Invalid JSON",
+			map[string]string{"msg": "aboba"},
+			http.StatusBadRequest},
+		{
+			"Empty JSON",
+			map[string]string{},
+			http.StatusBadRequest},
+		{
+			"Nil map",
+			nil,
+			http.StatusBadRequest},
 	}
 
 	for _, tc := range tests {
